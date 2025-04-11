@@ -13,7 +13,7 @@ class AuthenticationController extends Controller
     public function requestOtp(Request $request)
     {
         $request->validate([
-            'phone' => 'required|string|regex:/^09\d{9}$/',
+            'phone' => 'required|string|ir_mobile:zero',
         ]);
 
         $verification = PhoneVerification::generate($request->phone);
@@ -26,7 +26,7 @@ class AuthenticationController extends Controller
     public function verifyOtp(Request $request)
     {
         $request->validate([
-            'phone' => 'required|string|regex:/^09\d{9}$/',
+            'phone' => 'required|string|ir_mobile:zero',
             'code' => 'required|digits:6',
         ]);
 
