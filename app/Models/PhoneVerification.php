@@ -37,7 +37,7 @@ class PhoneVerification extends Model
         ]);
     }
 
-    public function validate($phone, $code){
+    public static function validate($phone, $code){
         $verification = self::where('phone', $phone)
             ->where('code', $code)
             ->where('expires_at', '>', now())

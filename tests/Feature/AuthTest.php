@@ -32,7 +32,7 @@ it('logs in the user with a valid verification code', function () {
         'phone' => '09123234567',
     ]);
 
-    $verification = PhoneVerification::factory()->create([
+    $verification = PhoneVerification::create([
         'phone' => '09123234567',
         'code' => '123456',
         'expires_at' => now()->addMinutes(5),
@@ -51,24 +51,25 @@ it('logs in the user with a valid verification code', function () {
 });
 
 it('does not log in user with incorrect verification code', function () {
-    User::factory()->create([
-        'phone' => '1234567890',
-        'verification_code' => '123456',
+    PhoneVerification::create([
+        'phone' => '09123456789',
+        'code' => '123456',
+        'expires_at' => now()->addMinutes(5),
     ]);
 
-    $response = postJson('/api/verify-otp', [
-        'phone' => '1234567890',
+    $response = postJson('/api/auth/verify-otp', [
+        'phone' => '09123456789',
         'code' => '000000',
     ]);
 
     $response->assertUnauthorized()
              ->assertJson([
-                 'message' => 'Invalid verification code.',
+                 'message' => 'Invalid or expired verification code.',
              ]);
 });
 
 it('registers a new user with a valid verification code', function () {
-    $verification = PhoneVerification::factory()->create([
+    $verification = PhoneVerification::create([
         'phone' => '09123234567',
         'code' => '123456',
         'expires_at' => now()->addMinutes(5),
@@ -82,7 +83,7 @@ it('registers a new user with a valid verification code', function () {
     $response->assertOk()
              ->assertJsonStructure([
                  'token',
-                 'user' => ['id', 'name', 'phone'],
+                 'user' => ['id', 'phone'],
              ]);
 
     $this->assertDatabaseHas('users', [

@@ -31,18 +31,20 @@ class AuthenticationController extends Controller
         ]);
 
         if (!PhoneVerification::validate($request->phone, $request->code)) {
-            return response()->json([
-                'message' => __('Invalid or expired verification code'),
-            ], 422);
+            return response()->json(['message' => __('Invalid or expired verification code.')], 401);
         }
 
+        // This automatically handles both cases correctly
         $user = User::firstOrCreate(['phone' => $request->phone]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        // Mark phone as verified (important for new registrations)
+        if (!$user->phone_verified_at) {
+            $user->update(['phone_verified_at' => now()]);
+        }
 
         return response()->json([
-            'token' => $token,
-            'user' => $user,
+            'token' => $user->createToken('auth_token')->plainTextToken,
+            'user' => $user
         ]);
     }
 }
