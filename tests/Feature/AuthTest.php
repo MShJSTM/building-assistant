@@ -104,6 +104,11 @@ it('allows access to protected route with valid token', function () {
         'Authorization' => 'Bearer ' . $token,
     ]);
 
-    $response->assertOk();
+    $response->assertOk()
+             ->assertJson([
+                 'id' => $user->id,
+                 'name' => $user->name,
+                 'phone' => $user->phone,
+             ]);
 });
 
