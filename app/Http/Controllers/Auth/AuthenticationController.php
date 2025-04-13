@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PhoneVerification;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 
 class AuthenticationController extends Controller
@@ -42,8 +43,10 @@ class AuthenticationController extends Controller
             $user->update(['phone_verified_at' => now()]);
         }
 
+        Auth::login($user);
+        $request->session()->regenerate();
+
         return response()->json([
-            'token' => $user->createToken('auth_token')->plainTextToken,
             'success' => true,
             'message' => __('Logged in successfully'),
             'user' => $user
@@ -57,8 +60,10 @@ class AuthenticationController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
         return response()->json(['message' => __('Logged out successfully')]);
     }
 }
