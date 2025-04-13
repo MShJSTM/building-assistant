@@ -48,4 +48,16 @@ class AuthenticationController extends Controller
             'message' => "OK"
         ]);
     }
+
+    public function user(Request $request)
+    {
+        return response()->json($request->user());
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json(['message' => __('Logged out successfully')]);
+    }
 }

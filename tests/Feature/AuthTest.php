@@ -98,12 +98,35 @@ it('registers a new user with a valid verification code', function () {
 
 it('allows access to protected route with valid token', function () {
     $user = User::factory()->create();
-    $token = $user->createToken('mobile-login')->plainTextToken;
-
-    $response = getJson('/api/user', [
+    $token = $user->createToken('auth-token')->plainTextToken;
+    
+    $response = getJson('/api/auth/user', [
         'Authorization' => 'Bearer ' . $token,
     ]);
 
-    $response->assertOk();
+    $response->assertOk()
+             ->assertJson([
+                 'id' => $user->id,
+                 'name' => $user->name,
+                 'phone' => $user->phone,
+             ]);
 });
 
+it('allows logout', function () {
+    $user = User::factory()->create();
+    $token = $user->createToken('auth-token');
+    
+    $response = postJson('/api/auth/logout', [], [
+        'Authorization' => 'Bearer ' . $token->plainTextToken,
+    ]);
+
+    $response->assertOk()
+             ->assertJson([
+                 'message' => __('Logged out successfully'),
+             ]);
+
+    $this->assertDatabaseMissing('personal_access_tokens', [
+        'name' => 'auth-token',
+        'token' => hash('sha256', $token->plainTextToken), 
+    ]);
+});
