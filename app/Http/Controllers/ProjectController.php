@@ -14,8 +14,8 @@ class ProjectController extends Controller
     public function index()
     {
         return response()->json([
-            'projects' => 
-        ]);
+            'projects' => auth()->user()->projects()->get()
+        ])->setStatusCode(200);
     }
 
     /**

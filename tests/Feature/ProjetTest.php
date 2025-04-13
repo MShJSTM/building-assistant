@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Project;
 use App\Models\User;
 
 use function Pest\Laravel\getJson;
@@ -8,13 +9,22 @@ it('can see projects', function () {
     $user = User::factory()->create();
     $token = $user->createToken('mobile-login')->plainTextToken;
 
+    $user->projects()->attach(Project::factory(3)->create(), ['role' => 'owner']);
+
     $response = getJson('/api/projects', [
         'Authorization' => 'Bearer ' . $token,
     ]);
 
+
+    // dd($response->json());
     $response->assertOk()
              ->assertJsonStructure([
-                 '*' => ['id', 'name', 'description'],
+                 'projects' => [
+                     '*' => [
+                         'id',
+                         'name',
+                     ],
+                 ],
              ]);
 });
 

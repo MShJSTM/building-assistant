@@ -15,6 +15,7 @@ class Project extends Model implements HasMedia
 
     protected $fillable = [
         'name',
+        'slug',
         'project_type',
         'address',
         'postal_plate',
