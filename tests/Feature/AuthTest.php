@@ -3,7 +3,7 @@
 use App\Models\PhoneVerification;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-
+use Illuminate\Support\Facades\RateLimiter;
 
 use function Pest\Laravel\getJson;
 use function Pest\Laravel\postJson;
@@ -130,3 +130,30 @@ it('allows logout', function () {
         'token' => hash('sha256', $token->plainTextToken), 
     ]);
 });
+
+it('throttles too many OTP requests', function () {
+    $phone = '09123456789';
+
+    // Clear rate limiting before starting test
+    RateLimiter::clear('request-otp|' . request()->ip());
+
+    // Send 5 successful requests
+    for ($i = 0; $i < 5; $i++) {
+        $response = $this->postJson(route('request-otp'), [
+            'phone' => $phone,
+        ]);
+
+        $response->assertStatus(200);
+    }
+
+    // 6th request should be throttled
+    $response = $this->postJson(route('request-otp'), [
+        'phone' => $phone,
+    ]);
+
+    $response->assertStatus(429);
+    $response->assertJson([
+        'message' => __('Too Many Attempts.')
+    ]);
+});
+

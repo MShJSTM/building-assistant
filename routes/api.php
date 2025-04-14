@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticationController;
+use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
 //authentication routes
@@ -16,4 +17,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 //projects routes
-Route::resource('projects', \App\Http\Controllers\ProjectController::class)->except(['create', 'edit'])->middleware(['auth:sanctum']);
+Route::resource('projects', ProjectController::class)->except(['create', 'edit'])->middleware(['auth:sanctum']);
