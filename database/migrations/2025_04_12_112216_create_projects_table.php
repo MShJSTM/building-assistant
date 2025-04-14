@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->string('status');
             $table->string('project_type');
             $table->text('address');
             $table->string('postal_code');

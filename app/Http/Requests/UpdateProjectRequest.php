@@ -24,6 +24,7 @@ class UpdateProjectRequest extends FormRequest
         return [
             'name' => 'string|max:255',
             'project_type' => 'string',
+            'status' => 'string',
             'address' => 'string',
             'postal_code' => 'string|max:255',
             'land_area' => 'numeric',

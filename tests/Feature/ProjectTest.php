@@ -36,6 +36,7 @@ it('can create a project', function () {
 
     $response = postJson('/api/projects', [
         'name' => 'New Project',
+        'status' => 'idea',
         'slug' => 'new-project',
         'project_type' => 'personal',
         'address' => '123 Main St',
@@ -72,6 +73,7 @@ it('can update a project', function () {
 
     $response = putJson('/api/projects/' . $project->slug, [
         'name' => 'Updated Project',
+        'status' => 'new status',
         'project_type' => 'commercial',
         'address' => '456 Main St',
         'postal_code' => '67890',
@@ -95,6 +97,7 @@ it('can update a project', function () {
     $this->assertDatabaseHas('projects', [
         'id' => $project->id,
         'name' => 'Updated Project',
+        'status' => 'new status',
         'project_type' => 'commercial',
         'address' => '456 Main St',
         'postal_code' => '67890',
