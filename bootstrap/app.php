@@ -3,7 +3,6 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -15,12 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         //add api middleware for api routes
-        $middleware->api([
-            EnsureFrontendRequestsAreStateful::class,
-            'throttle:api',
-            'bindings',
-        ])
-        ;
+        $middleware->api();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

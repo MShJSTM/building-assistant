@@ -43,13 +43,14 @@ class AuthenticationController extends Controller
             $user->update(['phone_verified_at' => now()]);
         }
 
-        Auth::login($user);
-        $request->session()->regenerate();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'message' => __('Logged in successfully'),
             'user' => $user
+                ->only(['id', 'name', 'phone']),
+            'token' => $token,
         ]);
     }
 
@@ -60,9 +61,7 @@ class AuthenticationController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->user()->currentAccessToken()->delete();
         
         return response()->json(['message' => __('Logged out successfully')]);
     }
