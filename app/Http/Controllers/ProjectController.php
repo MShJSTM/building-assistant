@@ -23,7 +23,17 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
-        dd($request->validated());
+        $project = Project::create($request->validated());
+
+        auth()->user()->projects()->attach($project->id, ['role' => 'owner']);
+        collect($request->file('images'))->each(function ($image) use ($project) {
+            $project->addMedia($image)->toMediaCollection('images');
+        });
+
+        return response()->json([
+            'project' => $project,
+            'message' => __('Project created successfully'),
+        ])->setStatusCode(201);
     }
 
     /**

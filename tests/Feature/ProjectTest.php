@@ -37,7 +37,7 @@ it('can create a project', function () {
         'slug' => 'new-project',
         'project_type' => 'personal',
         'address' => '123 Main St',
-        'postal_plate' => '12345',
+        'postal_code' => '12345',
         'land_area' => 1000,
         'building_area' => 500,
         'structure_type' => 'residential',
@@ -53,7 +53,7 @@ it('can create a project', function () {
     ], [
         'Authorization' => 'Bearer ' . $token,
     ]);
-    dd($response->json());
+    
     $response->assertCreated()
              ->assertJson([
                  'project' => [
@@ -71,7 +71,29 @@ it('can delete a project', function () {
 });
 
 it('can see a project', function () {
-    //
+    $user = User::factory()->create();
+    $token = $user->createToken('auth-token')->plainTextToken;
+    $project = Project::factory()->create();
+    $user->projects()->attach($project, ['role' => 'owner']);
+    $response = getJson('/api/projects/' . $project->id, [
+        'Authorization' => 'Bearer ' . $token,
+    ]);
+    $response->assertOk()
+             ->assertJson([
+                 'project' => [
+                     'id' => $project->id,
+                     'name' => $project->name,
+                 ],
+             ]);
+    $this->assertDatabaseHas('projects', [
+        'id' => $project->id,
+        'name' => $project->name,
+    ]);
+    $this->assertDatabaseHas('project_user', [
+        'project_id' => $project->id,
+        'user_id' => $user->id,
+        'role' => 'owner',
+    ]);
 });
 
 it('can assign a user to a project', function () {
