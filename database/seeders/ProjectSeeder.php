@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Project;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,8 +14,12 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\Project::factory(10)->create()->each(function ($project) {
-            $project->users()->attach(\App\Models\User::factory(3)->create(), ['role' => 'member']);
+        Project::factory(10)->create()->each(function ($project) {
+            $project->users()->attach(User::factory(3)->create(), ['role' => 'member']);
+        });
+
+        User::all()->each(function ($user){
+            $project = Project::factory()->create()->attach($user, ['role' => 'owner']);
         });
     }
 }
