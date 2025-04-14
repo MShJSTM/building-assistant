@@ -75,7 +75,7 @@ it('can see a project', function () {
     $token = $user->createToken('auth-token')->plainTextToken;
     $project = Project::factory()->create();
     $user->projects()->attach($project, ['role' => 'owner']);
-    $response = getJson('/api/projects/' . $project->id, [
+    $response = getJson('/api/projects/' . $project->slug, [
         'Authorization' => 'Bearer ' . $token,
     ]);
     $response->assertOk()

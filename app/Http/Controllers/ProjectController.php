@@ -14,7 +14,9 @@ class ProjectController extends Controller
     public function index()
     {
         return response()->json([
-            'projects' => auth()->user()->projects()->get()
+            'projects' => auth()->user()->projects()->get()->each(function ($project){
+                $project->image = $project->getFirstMediaUrl('images');
+            }),
         ])->setStatusCode(200);
     }
 
@@ -40,8 +42,16 @@ class ProjectController extends Controller
      * Display the specified resource.
      */
     public function show(Project $project)
-    {
-        //
+    {   $project->images = $project->getMedia('images')->map(function ($media) {
+            return [
+                'id' => $media->id,
+                'url' => $media->getUrl(),
+            ];
+        });
+        
+        return response()->json([
+            'project' => $project,
+        ])->setStatusCode(200);  
     }
 
     /**

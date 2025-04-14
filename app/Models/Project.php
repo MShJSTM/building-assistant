@@ -38,6 +38,11 @@ class Project extends Model implements HasMedia
         'updated_at',
     ];
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     //register media collections
     public function registerMediaCollections(): void
     {
