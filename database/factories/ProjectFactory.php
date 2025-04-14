@@ -21,7 +21,7 @@ class ProjectFactory extends Factory
             'slug' => $this->faker->slug,
             'project_type' => $this->faker->word,
             'address' => $this->faker->address,
-            'postal_plate' => $this->faker->postcode,
+            'postal_code' => $this->faker->postcode,
             'land_area' => $this->faker->numberBetween(100, 10000),
             'building_area' => $this->faker->numberBetween(100, 10000),
             'structure_type' => $this->faker->word,

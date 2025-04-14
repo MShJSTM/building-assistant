@@ -18,7 +18,7 @@ class Project extends Model implements HasMedia
         'slug',
         'project_type',
         'address',
-        'postal_plate',
+        'postal_code',
         'land_area',
         'building_area',
         'structure_type',

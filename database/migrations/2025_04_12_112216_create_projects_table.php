@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('project_type');
             $table->text('address');
-            $table->string('postal_plate');
+            $table->string('postal_code');
             $table->integer('land_area');
             $table->integer('building_area');
             $table->string('structure_type');
