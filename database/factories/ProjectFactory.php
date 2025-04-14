@@ -18,6 +18,7 @@ class ProjectFactory extends Factory
     {
         return [
             'name' => $this->faker->company,
+            'slug' => $this->faker->slug,
             'project_type' => $this->faker->word,
             'address' => $this->faker->address,
             'postal_plate' => $this->faker->postcode,
