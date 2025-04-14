@@ -11,7 +11,7 @@ class UpdateProjectRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,19 @@ class UpdateProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'string|max:255',
+            'project_type' => 'string',
+            'address' => 'string',
+            'postal_code' => 'string|max:255',
+            'land_area' => 'numeric',
+            'building_area' => 'numeric',
+            'structure_type' => 'string|max:255',
+            'start_date' => 'date',
+            'end_date' => 'date|after_or_equal:start_date',
+            'permit_start_date' => 'date',
+            'permit_end_date' => 'date|after_or_equal:permit_start_date',
+            'images' => 'array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif',
         ];
     }
 }

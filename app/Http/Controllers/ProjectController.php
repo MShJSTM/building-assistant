@@ -48,7 +48,7 @@ class ProjectController extends Controller
                 'url' => $media->getUrl(),
             ];
         });
-        
+
         return response()->json([
             'project' => $project,
         ])->setStatusCode(200);  
@@ -59,7 +59,18 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        //
+        $project->update($request->validated());
+
+        if ($request->hasFile('images')) {
+            $project->clearMediaCollection('images');
+            collect($request->file('images'))->each(function ($image) use ($project) {
+                $project->addMedia($image)->toMediaCollection('images');
+            });
+        }
+        return response()->json([
+            'project' => $project,
+            'message' => __('Project updated successfully'),
+        ])->setStatusCode(200);
     }
 
     /**
@@ -67,6 +78,10 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+        $project->delete();
+
+        return response()->json([
+            'message' => __('Project deleted successfully'),
+        ])->setStatusCode(200);
     }
 }

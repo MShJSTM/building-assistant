@@ -25,6 +25,7 @@ return new class extends Migration
             $table->date('end_date');
             $table->date('permit_start_date');
             $table->date('permit_end_date');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

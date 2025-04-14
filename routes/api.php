@@ -17,4 +17,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 
 //projects routes
-Route::resource('projects', ProjectController::class)->except(['edit','destroy','create'])->middleware(['auth:sanctum']);
+Route::resource('projects', ProjectController::class)->except(['edit','create'])->middleware(['auth:sanctum']);

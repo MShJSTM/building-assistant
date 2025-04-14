@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -12,6 +13,7 @@ class Project extends Model implements HasMedia
     /** @use HasFactory<\Database\Factories\ProjectFactory> */
     use HasFactory;
     use InteractsWithMedia;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -37,7 +39,6 @@ class Project extends Model implements HasMedia
         'created_at',
         'updated_at',
     ];
-
     public function getRouteKeyName()
     {
         return 'slug';
