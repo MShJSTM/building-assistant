@@ -18,3 +18,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 //projects routes
 Route::resource('projects', ProjectController::class)->except(['edit','create'])->middleware(['auth:sanctum']);
+Route::post('projects/users', [ProjectController::class, 'attachUser'])->name('projects.users.store')->middleware(['auth:sanctum']);
+Route::delete('projects/users', [ProjectController::class, 'detachUser'])->name('projects.users.destroy')->middleware(['auth:sanctum']);
