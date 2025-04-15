@@ -19,7 +19,8 @@ class ProjectSeeder extends Seeder
         });
 
         User::all()->each(function ($user){
-            $project = Project::factory()->create()->attach($user, ['role' => 'owner']);
+            $project = Project::factory()->create();
+            $project->users()->attach($user->id, ['role' => 'owner']);
         });
     }
 }

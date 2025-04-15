@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
@@ -82,6 +83,33 @@ class ProjectController extends Controller
 
         return response()->json([
             'message' => __('Project deleted successfully'),
+        ])->setStatusCode(200);
+    }
+
+    public function attachUser(Request $request, Project $project)
+    {
+        $request->validate([
+            'mobile' => 'required|exists:users,id',
+            'role' => 'required|string',
+        ]);
+
+        $project->users()->attach($request->user_id, ['role' => $request->role]);
+
+        return response()->json([
+            'message' => __('User assigned to project successfully.'),
+        ])->setStatusCode(201);
+    }
+
+    public function detachUser(Request $request, Project $project)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $project->users()->detach($request->user_id);
+
+        return response()->json([
+            'message' => __('User detached from project successfully.'),
         ])->setStatusCode(200);
     }
 }
