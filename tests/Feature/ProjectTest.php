@@ -165,3 +165,17 @@ it('can see a project', function () {
 it('can assign a user to a project', function () {
     //
 });
+
+//policies
+it('can not see other users projects', function () {
+    $user = User::factory()->create();
+    $token = $user->createToken('auth-token')->plainTextToken;
+
+    $project = Project::factory()->create();
+
+    $response = getJson('/api/projects/'. $project->slug , [
+        'Authorization' => 'Bearer ' . $token,
+    ]);
+
+    $response->assertForbidden();
+});

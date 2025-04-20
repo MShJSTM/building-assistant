@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Project;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectController extends Controller
 {
@@ -15,7 +17,7 @@ class ProjectController extends Controller
     public function index()
     {
         return response()->json([
-            'projects' => auth()->user()->projects()->get()->each(function ($project){
+            'projects' => auth()->user()->projects()->get()->each(function ($project) {
                 $project->image = $project->getFirstMediaUrl('images');
             }),
         ])->setStatusCode(200);
@@ -42,8 +44,11 @@ class ProjectController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Project $project)
-    {   $project->images = $project->getMedia('images')->map(function ($media) {
+    public function show(Project $project, Request $request)
+    {
+        Gate::authorize('view', $project);
+
+        $project->images = $project->getMedia('images')->map(function ($media) {
             return [
                 'id' => $media->id,
                 'url' => $media->getUrl(),
@@ -52,7 +57,7 @@ class ProjectController extends Controller
 
         return response()->json([
             'project' => $project,
-        ])->setStatusCode(200);  
+        ])->setStatusCode(200);
     }
 
     /**
@@ -60,6 +65,8 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
+        Gate::authorize('update', $project);
+
         $project->update($request->validated());
 
         if ($request->hasFile('images')) {
@@ -79,6 +86,8 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
+        Gate::authorize('update', $project);
+
         $project->delete();
 
         return response()->json([
@@ -88,12 +97,20 @@ class ProjectController extends Controller
 
     public function attachUser(Request $request, Project $project)
     {
+        Gate::authorize('update', $project);
+
         $request->validate([
-            'mobile' => 'required|exists:users,id',
+            'phone' => 'required|string',
             'role' => 'required|string',
+            'name' => 'required|string',
         ]);
 
-        $project->users()->attach($request->user_id, ['role' => $request->role]);
+        $user = User::firstOrCreate(
+            ['phone' => $request->phone],
+            ['name' => $request->name]
+        );
+        
+        $project->users()->attach($user->id, ['role' => $request->role]);
 
         return response()->json([
             'message' => __('User assigned to project successfully.'),
@@ -102,6 +119,8 @@ class ProjectController extends Controller
 
     public function detachUser(Request $request, Project $project)
     {
+        Gate::authorize('update', $project);
+
         $request->validate([
             'user_id' => 'required|exists:users,id',
         ]);
