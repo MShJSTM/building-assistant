@@ -131,4 +131,13 @@ class ProjectController extends Controller
             'message' => __('User detached from project successfully.'),
         ])->setStatusCode(200);
     }
+
+    public function users(Project $project)
+    {
+        Gate::authorize('update', $project);
+
+        return response()->json([
+            'users' => $project->users()->get(),
+        ])->setStatusCode(200);
+    }
 }
