@@ -35,7 +35,7 @@ class StoreProjectRequest extends FormRequest
             'end_date' => 'required|date|after_or_equal:start_date',
             'permit_start_date' => 'required|date',
             'permit_end_date' => 'required|date|after_or_equal:permit_start_date',
-            'images' => 'array',
+            'images' => 'required|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif',
         ];
     }
