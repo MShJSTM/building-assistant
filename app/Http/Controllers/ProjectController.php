@@ -136,8 +136,16 @@ class ProjectController extends Controller
     {
         Gate::authorize('update', $project);
 
+        $users = $project->users()->get();
         return response()->json([
-            'users' => $project->users()->get(),
+            'users' => $users->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                    'role' => $user->pivot->role,
+                ];
+            }),
         ])->setStatusCode(200);
     }
 }

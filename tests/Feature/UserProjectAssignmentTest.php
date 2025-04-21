@@ -55,7 +55,7 @@ it('can detach users from his own projects', function () {
     $project = Project::factory()->create();
     $user->projects()->attach($project, ['role' => 'owner']);
 
-    $response = deleteJson('/api/projects/' . $project->id . '/detach', [
+    $response = deleteJson('/api/projects/'.$project->slug.'/users', [
         'user_id' => User::factory()->create()->id,
     ], [
         'Authorization' => 'Bearer ' . $token,
@@ -67,7 +67,7 @@ it('can detach users from his own projects', function () {
              ]);
 });
 
-it('assigned user can see his projects', function () {
+test('assigned user can see his projects', function () {
     $user = User::factory()->create();
     $token = $user->createToken('auth-token')->plainTextToken;
 
@@ -80,10 +80,34 @@ it('assigned user can see his projects', function () {
 
     $response->assertOk()
              ->assertJson([
-                 'data' => [
+                 'projects' => [
                      [
                          'id' => $project->id,
                          'name' => $project->name,
+                     ],
+                 ],
+             ]);
+});
+
+it('can see users of his projects', function () {
+    $user = User::factory()->create();
+    $token = $user->createToken('auth-token')->plainTextToken;
+
+    $project = Project::factory()->create();
+    $user->projects()->attach($project, ['role' => 'owner']);
+
+    $response = getJson('/api/projects/' . $project->slug . '/users', [
+        'Authorization' => 'Bearer ' . $token,
+    ]);
+
+    $response->assertOk()
+             ->assertJson([
+                 'users' => [
+                     [
+                         'id' => $user->id,
+                         'name' => $user->name,
+                         'phone' => $user->phone,
+                         'role' => 'owner',
                      ],
                  ],
              ]);
