@@ -65,4 +65,19 @@ class AuthenticationController extends Controller
         
         return response()->json(['message' => __('Logged out successfully')]);
     }
+
+    public function findUser(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required|string|ir_mobile:zero',
+        ]);
+
+        $user = User::where('phone', $request->phone)->first();
+
+        if (!$user) {
+            return response()->json(['message' => __('User not found')], 404);
+        }
+
+        return response()->json($user->only(['name', 'phone']));
+    }
 }

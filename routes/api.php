@@ -15,7 +15,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/auth/logout', [AuthenticationController::class, 'logout'])->name('logout');
 });
 
-
+Route::post('/users/find', [AuthenticationController::class, 'findUser'])->name('find-user')->middleware(['auth:sanctum']);
 //projects routes
 Route::resource('projects', ProjectController::class)->except(['edit','create'])->middleware(['auth:sanctum']);
 Route::get('projects/{project}/users', [ProjectController::class, 'users'])->name('projects.users.index')->middleware(['auth:sanctum']);

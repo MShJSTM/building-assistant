@@ -13,8 +13,8 @@ it('owner can assign users to his projects', function () {
 
     $project = Project::factory()->create();
 
-    $response = postJson('/api/projects/'.$project->slug.'/users', [
-        'phone' => '0912345678', 
+    $response = postJson('/api/projects/' . $project->slug . '/users', [
+        'phone' => '0912345678',
         'role' => 'member',
         'name' => 'John Doe',
     ], [
@@ -22,14 +22,14 @@ it('owner can assign users to his projects', function () {
     ]);
 
     $response->assertForbidden()
-             ->assertJson([
-                 'message' => 'You do not have permission to update this project.',
-             ]);
+        ->assertJson([
+            'message' => 'You do not have permission to update this project.',
+        ]);
 
     $user->projects()->attach($project, ['role' => 'owner']);
-             
-    $response = postJson('/api/projects/'.$project->slug.'/users', [
-        'phone' => '0912345678', 
+
+    $response = postJson('/api/projects/' . $project->slug . '/users', [
+        'phone' => '0912345678',
         'role' => 'member',
         'name' => 'John Doe',
     ], [
@@ -37,15 +37,47 @@ it('owner can assign users to his projects', function () {
     ]);
 
     $response->assertCreated()
-             ->assertJson([
-                 'message' => 'User assigned to project successfully.',
-             ]);
+        ->assertJson([
+            'message' => 'User assigned to project successfully.',
+        ]);
 
     $this->assertDatabaseHas('project_user', [
         'user_id' => User::where('phone', '0912345678')->first()->id,
         'project_id' => $project->id,
         'role' => 'member',
     ]);
+});
+
+it('can see a phone is registered before or not', function () {
+    //refresh the database
+    $this->artisan('migrate:fresh --seed')->run();
+    $user = User::factory()->create();
+    $token = $user->createToken('auth-token')->plainTextToken;
+
+    $userToCheck = User::factory()->create(['phone' => '09123456789']);
+
+    $response = postJson('/api/users/find', [
+        'phone' => '09123456789',
+    ], [
+        'Authorization' => 'Bearer ' . $token,
+    ]);
+
+    $response->assertOk()
+        ->assertJson([
+            'name' => $userToCheck->name,
+            'phone' => $userToCheck->phone,
+        ]);
+
+    $response = postJson('/api/users/find', [
+        'phone' => '09123456799',
+    ], [
+        'Authorization' => 'Bearer ' . $token,
+    ]);
+
+    $response->assertNotFound()
+        ->assertJson([
+            'message' => 'User not found.',
+        ]);
 });
 
 it('can detach users from his own projects', function () {
@@ -55,16 +87,16 @@ it('can detach users from his own projects', function () {
     $project = Project::factory()->create();
     $user->projects()->attach($project, ['role' => 'owner']);
 
-    $response = deleteJson('/api/projects/'.$project->slug.'/users', [
+    $response = deleteJson('/api/projects/' . $project->slug . '/users', [
         'user_id' => User::factory()->create()->id,
     ], [
         'Authorization' => 'Bearer ' . $token,
     ]);
 
     $response->assertOk()
-             ->assertJson([
-                 'message' => 'User detached from project successfully.',
-             ]);
+        ->assertJson([
+            'message' => 'User detached from project successfully.',
+        ]);
 });
 
 test('assigned user can see his projects', function () {
@@ -79,14 +111,14 @@ test('assigned user can see his projects', function () {
     ]);
 
     $response->assertOk()
-             ->assertJson([
-                 'projects' => [
-                     [
-                         'id' => $project->id,
-                         'name' => $project->name,
-                     ],
-                 ],
-             ]);
+        ->assertJson([
+            'projects' => [
+                [
+                    'id' => $project->id,
+                    'name' => $project->name,
+                ],
+            ],
+        ]);
 });
 
 it('can see users of his projects', function () {
@@ -101,14 +133,14 @@ it('can see users of his projects', function () {
     ]);
 
     $response->assertOk()
-             ->assertJson([
-                 'users' => [
-                     [
-                         'id' => $user->id,
-                         'name' => $user->name,
-                         'phone' => $user->phone,
-                         'role' => 'owner',
-                     ],
-                 ],
-             ]);
+        ->assertJson([
+            'users' => [
+                [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                    'role' => 'owner',
+                ],
+            ],
+        ]);
 });
